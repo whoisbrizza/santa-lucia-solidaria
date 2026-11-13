@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santa Lúcia Solidária</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f6fb;
+            color: #24344d;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #123b70, #1766b1);
+            color: white;
+            text-align: center;
+            padding: 42px 20px 48px;
+            border-radius: 0 0 28px 28px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        header p {
+            font-size: 17px;
+            line-height: 1.6;
+            max-width: 550px;
+            margin: auto;
+        }
+
+        main {
+            width: 90%;
+            max-width: 520px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(20, 54, 90, 0.08);
+            margin-bottom: 22px;
+        }
+
+        .card h2 {
+            font-size: 23px;
+            color: #123b70;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 16px;
+            margin-bottom: 18px;
+        }
+
+        input:focus {
+            outline: 2px solid #1766b1;
+            border-color: #1766b1;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 9px;
+            background: #1766b1;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .button:hover {
+            background: #123b70;
+        }
+
+        .button-outline {
+            background: white;
+            color: #1766b1;
+            border: 2px solid #1766b1;
+        }
+
+        .button-outline:hover {
+            background: #edf5ff;
+            color: #123b70;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .notice {
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #52647a;
+            padding: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 22px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 25px;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo" aria-hidden="true">🚗 ✝</div>
+        <h1>Santa Lúcia Solidária</h1>
+        <p>
+            Caronas da comunidade para as atividades
+            da Paróquia Santa Lúcia.
+        </p>
+    </header>
+
+    <main>
+
+        <section class="card">
+            <h2>Acesse sua conta</h2>
+
+            <form>
+                <label for="email">E-mail</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Digite seu e-mail"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="senha">Senha</label>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button class="button" type="button">
+                    Entrar
+                </button>
+            </form>
+
+            <a href="#" class="button button-outline">
+                Criar conta
+            </a>
+        </section>
+
+        <section class="card">
+            <h2>Como podemos ajudar?</h2>
+
+            <div class="actions">
+                <a href="/oferecer-carona" class="button">
+                    Oferecer carona
+                </a>
+
+                <a href="/consultar-caronas" class="button button-outline">
+                    Buscar carona
+                </a>
+            </div>
+        </section>
+
+        <p class="notice">
+            💙 Serviço gratuito e solidário,
+            exclusivo para a comunidade.
+        </p>
+
+    </main>
+
+    <footer>
+        Santa Lúcia Solidária © 2026 @whoisbrizza
+    </footer>
+
+</body>
+</html>

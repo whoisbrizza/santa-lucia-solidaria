@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar solicitações | Santa Lúcia Solidária</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="header">
+    <h1>🚙 ✝ Santa Lúcia Solidária</h1>
+    <p>Caronas da comunidade para as atividades da Paróquia Santa Lúcia.</p>
+</header>
+
+<main class="container">
+    <section class="card">
+        <h2>Gerenciar solicitações</h2>
+        <p>Consulte os passageiros interessados nas suas caronas e gerencie os pedidos.</p>
+
+        <div class="filtros">
+            <label for="motoristaId">Motorista responsável</label>
+            <select id="motoristaId" required>
+                <option value="">Carregando usuários...</option>
+            </select>
+
+            <button type="button" id="btnCarregar" class="btn-primary">
+                Consultar solicitações
+            </button>
+        </div>
+
+        <div id="mensagem" role="status" aria-live="polite"></div>
+
+        <div id="listaCaronas">
+            <p>Selecione o motorista para consultar as solicitações.</p>
+        </div>
+
+        <div class="acoes-secundarias">
+            <a href="/">Voltar ao início</a>
+            <a href="/consultar-caronas">Buscar caronas</a>
+            <a href="/oferecer-carona">Oferecer carona</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    Santa Lúcia Solidária © 2026 @whoisbrizza
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const motoristaSelect = document.getElementById("motoristaId");
+    const listaCaronas = document.getElementById("listaCaronas");
+    const mensagem = document.getElementById("mensagem");
+    const btnCarregar = document.getElementById("btnCarregar");
+
+    async function carregarUsuarios() {
+        try {
+            const resposta = await fetch("/api/usuarios");
+
+            if (!resposta.ok) {
+                throw new Error("Não foi possível carregar os usuários.");
+            }
+
+            const usuarios = await resposta.json();
+
+            motoristaSelect.innerHTML =
+                '<option value="">Selecione o motorista</option>';
+
+            usuarios.forEach(usuario => {
+                const opcao = document.createElement("option");
+                opcao.value = usuario.id;
+                opcao.textContent = usuario.nome;
+                motoristaSelect.appendChild(opcao);
+            });
+
+        } catch (erro) {
+            motoristaSelect.innerHTML =
+                '<option value="">Erro ao carregar usuários</option>';
+            mensagem.textContent = erro.message;
+        }
+    }
+
+    async function carregarSolicitacoes() {
+        const motoristaId = motoristaSelect.value;
+
+        if (!motoristaId) {
+            mensagem.textContent = "Selecione o motorista responsável.";
+            return;
+        }
+
+        btnCarregar.disabled = true;
+        btnCarregar.textContent = "Carregando...";
+        listaCaronas.innerHTML = "<p>Buscando caronas...</p>";
+        mensagem.textContent = "";
+
+        try {
+            const resposta = await fetch("/api/caronas");
+
+            if (!resposta.ok) {
+                throw new Error("Não foi possível carregar as caronas.");
+            }
+
+            const caronas = await resposta.json();
+
+            const minhasCaronas = caronas.filter(
+                carona => String(carona.motorista?.id) === motoristaId
+            );
+
+            listaCaronas.innerHTML = "";
+
+            if (minhasCaronas.length === 0) {
+                listaCaronas.innerHTML =
+                    "<p>Você ainda não possui caronas cadastradas.</p>";
+                return;
+            }
+
+            for (const carona of minhasCaronas) {
+                const card = document.createElement("article");
+                card.className = "card-carona";
+
+                const titulo = document.createElement("h3");
+                titulo.textContent =
+                    carona.origem + " → " + carona.destino;
+
+                const data = carona.data
+                    ? carona.data.split("-").reverse().join("/")
+                    : "Data não informada";
+
+                const horario = carona.horario
+                    ? carona.horario.substring(0, 5)
+                    : "Horário não informado";
+
+                const detalhes = document.createElement("p");
+                detalhes.textContent =
+                    "📅 " + data +
+                    " | 🕒 " + horario +
+                    " | 💺 " + carona.vagasDisponiveis + " vaga(s)";
+
+                const subtitulo = document.createElement("h4");
+                subtitulo.textContent = "Solicitações recebidas";
+
+                const lista = document.createElement("div");
+
+                card.append(titulo, detalhes, subtitulo, lista);
+                listaCaronas.appendChild(card);
+
+                await carregarPassageiros(carona, lista, motoristaId);
+            }
+
+        } catch (erro) {
+            listaCaronas.innerHTML =
+                "<p>Não foi possível carregar as solicitações.</p>";
+            console.error(erro);
+        } finally {
+            btnCarregar.disabled = false;
+            btnCarregar.textContent = "Consultar solicitações";
+        }
+    }
+
+    async function carregarPassageiros(carona, lista, motoristaId) {
+        try {
+            const resposta = await fetch(
+                "/api/solicitacoes/carona/" + carona.id
+            );
+
+            if (!resposta.ok) {
+                throw new Error("Falha ao consultar passageiros.");
+            }
+
+            const solicitacoes = await resposta.json();
+            lista.innerHTML = "";
+
+            if (solicitacoes.length === 0) {
+                lista.innerHTML = "<p>Nenhuma solicitação recebida.</p>";
+                return;
+            }
+
+            solicitacoes.forEach(solicitacao => {
+                const item = document.createElement("div");
+                item.className = "card-carona";
+
+                const nome = document.createElement("h4");
+                nome.textContent =
+                    solicitacao.passageiro?.nome || "Passageiro";
+
+                const contato = document.createElement("p");
+                contato.textContent =
+                    "E-mail: " +
+                    (solicitacao.passageiro?.email || "Não informado") +
+                    " | Telefone: " +
+                    (solicitacao.passageiro?.telefone || "Não informado");
+
+                const status = document.createElement("p");
+                status.textContent = "Status: " + solicitacao.status;
+
+                item.append(nome, contato, status);
+
+                if (solicitacao.status === "PENDENTE") {
+                    const aceitar = document.createElement("button");
+                    aceitar.type = "button";
+                    aceitar.className = "btn-primary";
+                    aceitar.textContent = "Aceitar";
+
+                    const recusar = document.createElement("button");
+                    recusar.type = "button";
+                    recusar.className = "btn-secondary";
+                    recusar.textContent = "Recusar";
+
+                    aceitar.addEventListener("click", () =>
+                        atualizarStatus(
+                            solicitacao.id, motoristaId, "ACEITA"
+                        )
+                    );
+
+                    recusar.addEventListener("click", () =>
+                        atualizarStatus(
+                            solicitacao.id, motoristaId, "RECUSADA"
+                        )
+                    );
+
+                    item.append(aceitar, recusar);
+                }
+
+                lista.appendChild(item);
+            });
+
+        } catch (erro) {
+            lista.textContent =
+                "Não foi possível consultar os passageiros desta carona.";
+            console.error(erro);
+        }
+    }
+
+    async function atualizarStatus(solicitacaoId, motoristaId, status) {
+        const acao = status === "ACEITA" ? "aceitar" : "recusar";
+
+        if (!confirm("Deseja realmente " + acao + " esta solicitação?")) {
+            return;
+        }
+
+        try {
+            const url =
+                "/api/solicitacoes/" + solicitacaoId +
+                "/status?motoristaId=" + motoristaId +
+                "&status=" + status;
+
+            const resposta = await fetch(url, { method: "PATCH" });
+
+            if (!resposta.ok) {
+                const erro = await resposta.text();
+                throw new Error(erro || "Não foi possível atualizar o status.");
+            }
+
+            mensagem.textContent =
+                "Solicitação " +
+                (status === "ACEITA" ? "aceita" : "recusada") +
+                " com sucesso!";
+
+            await carregarSolicitacoes();
+
+        } catch (erro) {
+            mensagem.textContent = "Erro: " + erro.message;
+        }
+    }
+
+    btnCarregar.addEventListener("click", carregarSolicitacoes);
+
+    carregarUsuarios();
+});
+</script>
+
+</body>
+</html>

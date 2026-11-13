@@ -1,0 +1,226 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f2f6fc;
+    color: #183153;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+.header {
+    background: linear-gradient(120deg, #17477f, #1768b5);
+    color: white;
+    text-align: center;
+    padding: 45px 20px;
+    border-radius: 0 0 28px 28px;
+}
+
+.header h1 {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.header p {
+    font-size: 17px;
+}
+
+.container {
+    width: 90%;
+    max-width: 750px;
+    margin: 35px auto;
+}
+
+.card {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(20, 55, 90, 0.08);
+}
+
+.card h2 {
+    color: #17477f;
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.card > p {
+    margin-bottom: 25px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #cbd8e8;
+    border-radius: 9px;
+    font-size: 16px;
+    background: white;
+    color: #183153;
+}
+
+button {
+    margin-top: 18px;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    background: #1768b5;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #124f8d;
+}
+
+.card a {
+    display: inline-block;
+    margin-top: 18px;
+    color: #1768b5;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 25px 15px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 25px;
+    }
+
+    .card {
+        padding: 22px;
+    }
+
+    .card h2 {
+        font-size: 23px;
+    }
+}
+
+/* ===== CONSULTA DE CARONAS ===== */
+
+.filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.filtros label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+    color: #183d70;
+}
+
+.filtros input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filtros button {
+    width: fit-content;
+}
+
+.lista-caronas {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.card-carona {
+    background: #ffffff;
+    border: 1px solid #dce6f3;
+    border-left: 5px solid #1769b2;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 4px 14px rgba(24, 61, 112, 0.08);
+}
+
+.card-carona h3 {
+    color: #183f78;
+    font-size: 21px;
+    margin: 0 0 14px;
+}
+
+.card-carona p {
+    color: #405675;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+.btn-solicitar {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 13px 22px;
+    background: #1769b2;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-solicitar:hover {
+    background: #124f89;
+}
+
+.acoes-secundarias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 28px;
+}
+
+.acoes-secundarias a {
+    color: #1769b2;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.acoes-secundarias a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .card-carona {
+        padding: 18px;
+    }
+
+    .card-carona h3 {
+        font-size: 19px;
+    }
+
+    .filtros button {
+        width: 100%;
+    }
+
+    .acoes-secundarias {
+        flex-direction: column;
+        gap: 12px;
+    }
+}

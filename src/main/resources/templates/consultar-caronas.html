@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar caronas | Santa Lúcia Solidária</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="header">
+    <h1>🚙 ✝ Santa Lúcia Solidária</h1>
+    <p>Caronas da comunidade para as atividades da Paróquia Santa Lúcia.</p>
+</header>
+
+<main class="container">
+    <section class="card">
+        <h2>Buscar caronas</h2>
+        <p>Encontre uma carona disponível para participar das atividades da comunidade!</p>
+
+        <div class="filtros">
+            <div>
+                <label for="filtroDestino">Destino</label>
+                <input type="text" id="filtroDestino"
+                       placeholder="Digite o destino">
+            </div>
+
+            <div>
+                <label for="filtroData">Data</label>
+                <input type="date" id="filtroData">
+            </div>
+
+            <button type="button" id="btnFiltrar" class="btn-primary">
+                Buscar
+            </button>
+
+            <button type="button" id="btnLimpar" class="btn-secondary">
+                Limpar filtros
+            </button>
+        </div>
+
+        <div id="mensagem" role="status" aria-live="polite"></div>
+
+        <div id="listaCaronas" class="lista-caronas">
+            <p>Carregando caronas...</p>
+        </div>
+
+        <div class="acoes-secundarias">
+            <a href="/">Voltar ao início</a>
+            <a href="/oferecer-carona">Oferecer uma carona</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    Santa Lúcia Solidária © 2026 @whoisbrizza
+</footer>
+
+
+<script>
+
+const listaCaronas = document.getElementById("listaCaronas");
+const mensagem = document.getElementById("mensagem");
+
+// Passageiro de teste cadastrado no banco
+const PASSAGEIRO_ID = 2;
+
+let minhasSolicitacoes = [];
+
+async function carregarMinhasSolicitacoes() {
+    const resposta = await fetch(
+        `/api/solicitacoes/passageiro/${PASSAGEIRO_ID}`
+    );
+
+    if (!resposta.ok) {
+        throw new Error("Não foi possível carregar suas solicitações.");
+    }
+
+    minhasSolicitacoes = await resposta.json();
+    exibirMinhasSolicitacoes();
+}
+
+function exibirMinhasSolicitacoes() {
+    let secao = document.getElementById("minhasSolicitacoes");
+
+    if (!secao) {
+        secao = document.createElement("section");
+        secao.id = "minhasSolicitacoes";
+        secao.className = "minhas-solicitacoes";
+
+        listaCaronas.parentNode.insertBefore(
+            secao,
+            listaCaronas.nextSibling
+        );
+    }
+
+    secao.innerHTML = `
+        <h2>Minhas solicitações</h2>
+        <div id="listaSolicitacoes"></div>
+    `;
+
+    const lista = document.getElementById("listaSolicitacoes");
+
+    if (minhasSolicitacoes.length === 0) {
+        lista.innerHTML = "<p>Você ainda não realizou solicitações.</p>";
+        return;
+    }
+
+    minhasSolicitacoes.forEach(solicitacao => {
+        const carona = solicitacao.carona;
+
+        const card = document.createElement("article");
+        card.className = "card-carona";
+
+        const rota = document.createElement("h3");
+        rota.textContent =
+            `${carona.origem} → ${carona.destino}`;
+
+        const data = carona.data
+            ? carona.data.split("-").reverse().join("/")
+            : "Data não informada";
+
+        const horario = carona.horario
+            ? carona.horario.substring(0, 5)
+            : "Horário não informado";
+
+        const detalhes = document.createElement("p");
+        detalhes.textContent = `📅 ${data} | 🕒 ${horario}`;
+
+        const status = document.createElement("p");
+        status.textContent = `Status: ${solicitacao.status}`;
+
+        card.appendChild(rota);
+        card.appendChild(detalhes);
+        card.appendChild(status);
+
+        lista.appendChild(card);
+    });
+}
+
+async function carregarCaronas() {
+    const destino = document
+        .getElementById("filtroDestino").value.trim();
+
+    const data = document.getElementById("filtroData").value;
+
+    listaCaronas.innerHTML = "<p>Carregando caronas...</p>";
+    mensagem.textContent = "";
+
+    try {
+        let url = "/api/caronas";
+
+        if (destino) {
+            url = "/api/caronas/destino?destino=" +
+                encodeURIComponent(destino);
+        } else if (data) {
+            url = "/api/caronas/data?data=" +
+                encodeURIComponent(data);
+        }
+
+        const resposta = await fetch(url);
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível consultar as caronas.");
+        }
+
+        const caronas = await resposta.json();
+
+        listaCaronas.innerHTML = "";
+
+        if (!caronas.length) {
+            listaCaronas.innerHTML =
+                "<p>Nenhuma carona encontrada com esses filtros.</p>";
+            return;
+        }
+
+        caronas.forEach(carona => {
+            const card = document.createElement("article");
+            card.className = "card-carona";
+
+            const motorista = carona.motorista?.nome ||
+                "Motorista não informado";
+
+            const dataFormatada = carona.data
+                ? carona.data.split("-").reverse().join("/")
+                : "Data não informada";
+
+            const horario = carona.horario
+                ? carona.horario.substring(0, 5)
+                : "Horário não informado";
+
+            const rota = document.createElement("h3");
+            rota.textContent =
+                `${carona.origem} → ${carona.destino}`;
+
+            const detalhes = document.createElement("p");
+            detalhes.textContent =
+                `📅 ${dataFormatada} | 🕒 ${horario} | 💺 ${carona.vagasDisponiveis} vaga(s)`;
+
+            const responsavel = document.createElement("p");
+            responsavel.textContent = "Motorista: " + motorista;
+
+            const solicitacaoExistente = minhasSolicitacoes.find(
+                item => item.carona.id === carona.id
+            );
+
+            const botaoSolicitar = document.createElement("button");
+            botaoSolicitar.type = "button";
+            botaoSolicitar.className = "btn-solicitar";
+
+            if (solicitacaoExistente) {
+                botaoSolicitar.textContent = "Solicitação enviada";
+                botaoSolicitar.disabled = true;
+            } else {
+                botaoSolicitar.textContent = "Solicitar vaga";
+
+                botaoSolicitar.addEventListener("click", () => {
+                    solicitarVaga(carona.id, botaoSolicitar);
+                });
+            }
+
+            card.appendChild(rota);
+            card.appendChild(detalhes);
+            card.appendChild(responsavel);
+            card.appendChild(botaoSolicitar);
+
+            listaCaronas.appendChild(card);
+        });
+
+    } catch (erro) {
+        listaCaronas.innerHTML =
+            "<p>Não foi possível carregar as caronas. Tente novamente.</p>";
+
+        console.error(erro);
+    }
+}
+
+async function solicitarVaga(caronaId, botao) {
+    const confirmar = window.confirm(
+        "Deseja realmente solicitar uma vaga nesta carona?"
+    );
+
+    if (!confirmar) return;
+
+    botao.disabled = true;
+    botao.textContent = "Enviando solicitação...";
+
+    try {
+        const resposta = await fetch(
+            `/api/solicitacoes/carona/${caronaId}/passageiro/${PASSAGEIRO_ID}`,
+            { method: "POST" }
+        );
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível realizar a solicitação.");
+        }
+
+        mensagem.textContent = "Solicitação enviada com sucesso!";
+        mensagem.style.color = "#1769b2";
+
+        await carregarMinhasSolicitacoes();
+        await carregarCaronas();
+
+    } catch (erro) {
+        mensagem.textContent =
+            "Não foi possível solicitar a vaga. Tente novamente.";
+
+        mensagem.style.color = "#b42318";
+
+        botao.disabled = false;
+        botao.textContent = "Solicitar vaga";
+
+        console.error(erro);
+    }
+}
+
+document.getElementById("btnFiltrar")
+    .addEventListener("click", carregarCaronas);
+
+document.getElementById("btnLimpar")
+    .addEventListener("click", () => {
+        document.getElementById("filtroDestino").value = "";
+        document.getElementById("filtroData").value = "";
+        carregarCaronas();
+    });
+
+async function inicializarPagina() {
+    try {
+        await carregarMinhasSolicitacoes();
+        await carregarCaronas();
+    } catch (erro) {
+        mensagem.textContent =
+            "Não foi possível carregar os dados. Atualize a página.";
+
+        mensagem.style.color = "#b42318";
+        console.error(erro);
+    }
+}
+
+inicializarPagina();
+
+</script>
+
+
+</body>
+</html>

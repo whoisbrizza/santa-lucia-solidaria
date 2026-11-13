@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferecer carona | Santa Lúcia Solidária</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="header">
+        <h1>🚙 ✝ Santa Lúcia Solidária</h1>
+        <p>Caronas da comunidade para as atividades da Paróquia Santa Lúcia.</p>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>Oferecer carona</h2>
+            <p>Compartilhe seu trajeto e ajude alguém da comunidade!</p>
+
+            <form id="formCarona">
+                <label for="origem">Origem</label>
+                <input id="origem" type="text" required placeholder="Digite o local de saída">
+
+                <label for="destino">Destino</label>
+                <input id="destino" type="text" required placeholder="Digite o destino">
+
+                <label for="data">Data</label>
+                <input id="data" type="date" required>
+
+                <label for="horario">Horário</label>
+                <input id="horario" type="time" required>
+
+                <label for="vagas">Vagas disponíveis</label>
+                <input id="vagas" type="number" min="1" required>
+
+                <button type="submit">Publicar carona</button>
+            </form>
+
+            <a href="/">Voltar</a>
+        </section>
+    </main>
+
+    <footer>
+        Santa Lúcia Solidária © 2026 @whoisbrizza
+    </footer>
+
+    <script th:src="@{/js/app.js}"></script>
+    
+</body>
+</html>
